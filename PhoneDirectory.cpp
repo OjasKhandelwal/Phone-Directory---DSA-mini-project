@@ -3,83 +3,59 @@
 using namespace std;
 
 struct Contact {
-    string name;
-    string phone;
-    Contact* left;
-    Contact* right;
+    string name, phone;
+    Contact *left, *right;
 };
 
-// Function to create a new contact node
 Contact* createContact(string name, string phone) {
     Contact* newNode = new Contact;
     newNode->name = name;
     newNode->phone = phone;
-    newNode->left = nullptr;
-    newNode->right = nullptr;
+    newNode->left = newNode->right = nullptr;
     return newNode;
 }
 
-// Function to insert a contact in BST
 Contact* insert(Contact* root, string name, string phone) {
-    if (root == nullptr)
-        return createContact(name, phone);
-
+    if (!root) return createContact(name, phone);
     if (name < root->name)
         root->left = insert(root->left, name, phone);
     else if (name > root->name)
         root->right = insert(root->right, name, phone);
     else
         cout << "Contact with this name already exists!\n";
-
     return root;
 }
 
-// Function to search for a contact by name
 Contact* search(Contact* root, string name) {
-    if (root == nullptr || root->name == name)
-        return root;
-
-    if (name < root->name)
-        return search(root->left, name);
-    else
-        return search(root->right, name);
+    if (!root || root->name == name) return root;
+    return (name < root->name) ? search(root->left, name) : search(root->right, name);
 }
 
-// Find node with minimum value (used for deletion)
 Contact* findMin(Contact* root) {
     while (root && root->left)
         root = root->left;
     return root;
 }
 
-// Function to delete a contact
 Contact* remove(Contact* root, string name) {
-    if (root == nullptr)
-        return nullptr;
-
+    if (!root) return nullptr;
     if (name < root->name)
         root->left = remove(root->left, name);
     else if (name > root->name)
         root->right = remove(root->right, name);
     else {
-        // Case 1: No child
         if (!root->left && !root->right) {
             delete root;
             return nullptr;
-        }
-        // Case 2: One child
-        else if (!root->left) {
+        } else if (!root->left) {
             Contact* temp = root->right;
             delete root;
             return temp;
-        }
-        else if (!root->right) {
+        } else if (!root->right) {
             Contact* temp = root->left;
             delete root;
             return temp;
-        }
-        // Case 3: Two children
-        else {
+        } else {
             Contact* temp = findMin(root->right);
             root->name = temp->name;
             root->phone = temp->phone;
@@ -89,10 +65,8 @@ Contact* remove(Contact* root, string name) {
     return root;
 }
 
-// Inorder traversal to display contacts alphabetically
 void inorder(Contact* root) {
-    if (root == nullptr)
-        return;
+    if (!root) return;
     inorder(root->left);
     cout << "Name: " << root->name << " | Phone: " << root->phone << endl;
     inorder(root->right);
@@ -104,13 +78,13 @@ int main() {
     string name, phone;
 
     do {
-        cout << "\n===== PHONE DIRECTORY MENU =====\n";
-        cout << "1. Add Contact\n";
-        cout << "2. Search Contact\n";
-        cout << "3. Delete Contact\n";
-        cout << "4. Display All Contacts\n";
-        cout << "5. Exit\n";
-        cout << "Enter your choice: ";
+        cout << "\n===== PHONE DIRECTORY MENU =====\n"
+             << "1. Add Contact\n"
+             << "2. Search Contact\n"
+             << "3. Delete Contact\n"
+             << "4. Display All Contacts\n"
+             << "5. Exit\n"
+             << "Enter your choice: ";
         cin >> choice;
         cin.ignore();
 
@@ -145,7 +119,6 @@ int main() {
             case 4:
                 cout << "\n--- Phone Directory (Alphabetical Order) ---\n";
                 inorder(root);
-                cout << "-------------------------------------------\n";
                 break;
 
             case 5:
@@ -156,6 +129,4 @@ int main() {
                 cout << "Invalid choice! Try again.\n";
         }
     } while (choice != 5);
-
-    return 0;
 }
